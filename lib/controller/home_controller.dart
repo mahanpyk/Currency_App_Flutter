@@ -28,7 +28,9 @@ class HomeController extends GetxController {
               element['nameFa'],
               element['price'],
               element['changeStatus'],
-              element['changePercent'] == null ? 0 : element['changePercent'].toDouble(),
+              element['changePercent'] == null
+                  ? 0
+                  : element['changePercent'].toDouble(),
               element['changePrice'] == null ? 0 : element['changePrice'],
             );
             currencyList.add(currencyModel);
@@ -133,9 +135,5 @@ class HomeController extends GetxController {
     currencyList.clear();
     update();
     getCurrency();
-  }
-
-  itemClick(CurrencyModel currency) {
-    Get.toNamed('/currencyProfile', arguments: currency);
   }
 }
