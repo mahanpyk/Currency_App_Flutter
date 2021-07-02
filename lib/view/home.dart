@@ -65,7 +65,7 @@ class Home extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 4),
                       child: ListView.builder(
                           scrollDirection: Axis.vertical,
-                          itemCount: 16,
+                          itemCount: _controller.currencyList.length + 1,
                           itemBuilder: (BuildContext context, int index) {
                             return index == 0
                                 ? Container(
@@ -104,115 +104,109 @@ class Home extends StatelessWidget {
           vertical: 4,
           horizontal: 8,
         ),
-        child: InkWell(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: currency.changeStatus == "+" ? Colors.green : Colors.red,
-              ),
-              borderRadius: BorderRadius.all(
-                Radius.circular(16),
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 1,
+              color: currency.changeStatus == "+" ? Colors.green : Colors.red,
             ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: LayoutBuilder(builder: (ctx, constraints) {
-                return Container(
-                  height: 48,
-                  child: Row(children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      child: currency.changeStatus == "+"
-                          ? Icon(
-                              Icons.arrow_upward,
-                              color: Colors.green,
-                            )
-                          : Icon(
-                              Icons.arrow_downward,
-                              color: Colors.red,
-                            ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: Wrap(children: [
-                        Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '${currency.changePercent.toString()} \%',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'IRANSans',
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: LayoutBuilder(builder: (ctx, constraints) {
+              return Container(
+                height: 48,
+                child: Row(children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    child: currency.changeStatus == "+"
+                        ? Icon(
+                            Icons.arrow_upward,
+                            color: Colors.green,
+                          )
+                        : Icon(
+                            Icons.arrow_downward,
+                            color: Colors.red,
                           ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    flex: 1,
+                    child: Wrap(children: [
+                      Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${currency.changePercent.toString()} \%',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'IRANSans',
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      ]),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 2,
-                      child: Wrap(children: [
-                        Text(
-                          currency.name,
-                          textAlign: TextAlign.right,
+                      ),
+                    ]),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: Wrap(children: [
+                      Text(
+                        currency.name,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontFamily: 'IRANSans',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ]),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    flex: 1,
+                    child: Wrap(children: [
+                      Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${_controller.priceFormatter(currency.changePrice)}',
                           style: TextStyle(
                             fontFamily: 'IRANSans',
                             fontSize: 14,
+                            color: currency.changeStatus == "+"
+                                ? Colors.green
+                                : Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ]),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: Wrap(children: [
-                        Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '${_controller.priceFormatter(currency.changePrice)}',
-                            style: TextStyle(
-                              fontFamily: 'IRANSans',
-                              fontSize: 14,
-                              color: currency.changeStatus == "+"
-                                  ? Colors.green
-                                  : Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ),
+                    ]),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: Wrap(children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "${_controller.priceFormatter(currency.price)} ريال",
+                          style: TextStyle(
+                            fontFamily: 'IRANSans',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ]),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 2,
-                      child: Wrap(children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "${_controller.priceFormatter(currency.price)} ريال",
-                            style: TextStyle(
-                              fontFamily: 'IRANSans',
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ]),
-                );
-              }),
-            ),
+                      ),
+                    ]),
+                  ),
+                ]),
+              );
+            }),
           ),
-          onTap: () => _controller.itemClick(currency),
         ),
       ),
     );
