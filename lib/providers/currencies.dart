@@ -1,50 +1,53 @@
 import 'package:currency_app/api/api_setting.dart';
-import 'package:currency_app/model/currency.dart';
+import 'package:currency_app/models/currency_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class HomeController extends GetxController {
-  var currencyList = [].obs;
-  List time = [];
+class Currencies extends ChangeNotifier {
+  List _currencyList = [];
+  List _time = [];
 
-  @override
-  void onInit() {
-    super.onInit();
-    getCurrency();
-  }
+  List get currencyList => _currencyList;
 
-  getCurrency() {
-    ApiSetting apiCall = ApiSetting();
-    apiCall.getRequest().then((value) {
-      if (value.success != null) {
-        bool success = value.success ?? false;
-        if (success) {
-          List list = value.body['list'];
-          time = value.body['timeCurrent'];
+  List get time => _time;
+
+  getCurrency() async {
+    final String _url = 'https://hamyarandroid.com/api?t=currency';
+    final ApiSetting _apiCall = ApiSetting();
+    try {
+      var response = await _apiCall.getRequest(_url);
+      if (response.success != null) {
+        if (response.success ?? false) {
+          List list = response.body['list'];
+          _time = response.body['timeCurrent'];
           list.forEach((element) {
             CurrencyModel currencyModel = CurrencyModel(
-              element['id'],
-              element['nameFa'],
-              element['price'],
-              element['changeStatus'],
-              element['changePercent'] == null
+              id: element['id'],
+              name: element['nameFa'],
+              price: priceFormatter(element['price']),
+              changeStatus: element['changeStatus'],
+              changePercent: element['changePercent'] == null
                   ? 0
                   : element['changePercent'].toDouble(),
-              element['changePrice'] == null ? 0 : element['changePrice'],
+              changePrice: priceFormatter(
+                  element['changePrice'] == null ? 0 : element['changePrice']),
             );
-            currencyList.add(currencyModel);
+            _currencyList.add(currencyModel);
           });
+        } else {
+          throw 'response not valid';
         }
       }
-      update();
-    });
+    } catch (e) {
+      throw 'no response available';
+    }
   }
 
   String priceFormatter(int price) {
-    double priceToDouble = price.toDouble();
-    NumberFormat numberFormat =
-        NumberFormat.currency(customPattern: '###,###,###', decimalDigits: 0);
+    final String _customPattern = '###,###,###';
+    final double priceToDouble = price.toDouble();
+    final NumberFormat numberFormat =
+        NumberFormat.currency(customPattern: _customPattern, decimalDigits: 0);
     return numberFormat.format(priceToDouble).toString();
   }
 
@@ -132,8 +135,7 @@ class HomeController extends GetxController {
   }
 
   refreshAction() async {
-    currencyList.clear();
-    update();
-    getCurrency();
+    _currencyList.clear();
+notifyListeners();
   }
 }

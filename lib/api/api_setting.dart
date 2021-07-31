@@ -1,19 +1,20 @@
-import 'package:currency_app/model/responseModel.dart';
+import 'package:currency_app/models/response_model.dart';
 import 'package:dio/dio.dart';
 
 class ApiSetting {
   Dio _dio = Dio();
 
-  Future<ResponseModel> getRequest() async {
+  Future<ResponseModel> getRequest(String url) async {
     return _dio
         .get(
-      'https://hamyarandroid.com/api?t=currency',
+      url,
       options: Options(
         headers: {
           'Accept': 'application/json',
         },
         receiveDataWhenStatusError: true,
         validateStatus: (_) => true,
+        receiveTimeout: 5,
       ),
     )
         .then((value) {

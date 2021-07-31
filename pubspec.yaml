@@ -9,10 +9,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get: ^4.1.4
+  flutter_localizations:
+    sdk: flutter
   dio: ^4.0.0
   intl: ^0.17.0
   cupertino_icons: ^1.0.2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -20,6 +22,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/i18n/
 
   fonts:
     - family: IRANSans
