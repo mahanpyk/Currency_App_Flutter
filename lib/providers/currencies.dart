@@ -37,6 +37,8 @@ class Currencies extends ChangeNotifier {
         } else {
           throw 'response not valid';
         }
+      } else {
+        throw 'response has null';
       }
     } catch (e) {
       throw 'no response available';
@@ -134,8 +136,8 @@ class Currencies extends ChangeNotifier {
     );
   }
 
-  refreshAction() async {
+  Future<void> refreshAction() async {
     _currencyList.clear();
-notifyListeners();
+    notifyListeners();
   }
 }

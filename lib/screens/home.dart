@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:currency_app/helper/app_localizations.dart';
+import 'package:currency_app/providers/language_provider.dart';
 import 'package:currency_app/providers/currencies.dart';
 import 'package:currency_app/models/currency_model.dart';
+import 'package:currency_app/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,103 +13,132 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Currencies _provider = Provider.of<Currencies>(context);
     print('build of HomeScreen');
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'نرخ ارزها',
-          style: TextStyle(
-            fontFamily: 'IRANSans',
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _provider.refreshAction(),
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.white,
+    return Consumer2<ThemeProvider, LanguageProvider>(
+      builder: (context, theme, language, child) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              AppLocalizations.of(context)!.translate('Message')!,
+              style: TextStyle(
+                fontFamily: 'IRANSans',
+              ),
             ),
-          )
-        ],
-        backgroundColor: Colors.red,
-      ),
-      body: SafeArea(
-        child: Container(
-          height: double.infinity,
-          width: double.infinity,
-          child: RefreshIndicator(
-            onRefresh: () => _provider.refreshAction(),
-            child: FutureBuilder(
-                future: _provider.getCurrency(),
-                builder: (ctx, dataSnapShot) {
-                  if (dataSnapShot.connectionState == ConnectionState.waiting) {
-                    return Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(color: Colors.purple),
-                            SizedBox(height: 16),
-                            Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: Text(
-                                "در حال دریافت اطلاعات ... ",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontFamily: 'IRANSans',
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ]),
-                    );
-                  } else {
-                    if (dataSnapShot.error != null) {
-                      final snackBar = SnackBar(
-                          content: Text(dataSnapShot.error.toString()));
-                      Future.delayed(Duration.zero).then((value) =>
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar));
-                      return Container();
-                    } else {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: _provider.currencyList.length + 1,
-                            itemBuilder: (BuildContext context, int index) {
-                              return index == 0
-                                  ? Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'آخرین بروزرسانی ${_provider.time[1]} ساعت ${_provider.time[2]}',
-                                              textDirection: TextDirection.rtl,
-                                              style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 14,
-                                                fontFamily: 'IRANSans',
-                                              ),
-                                            )
-                                          ]),
-                                    )
-                                  : generateItem(
-                                      _provider.currencyList[index - 1]);
-                            }),
-                      );
-                    }
-                  }
-                }),
+            actions: [
+              DropdownMenuItem(child: Container()),
+              IconButton(
+                onPressed: () => language.changeLanguage(
+                    language.appLocal == Locale("fa")
+                        ? Locale("en")
+                        : Locale("fa")),
+                icon: Icon(
+                  Icons.language,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                onPressed: () => _provider.refreshAction(),
+                icon: Icon(
+                  Icons.refresh,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+            leading: IconButton(
+              onPressed: () => theme.setTheme(theme.getTheme == ThemeMode.light
+                  ? ThemeMode.dark
+                  : ThemeMode.light),
+              icon: Icon(
+                theme.getTheme == ThemeMode.light
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.red,
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: Container(
+              height: double.infinity,
+              width: double.infinity,
+              child: RefreshIndicator(
+                onRefresh: () => _provider.refreshAction(),
+                child: FutureBuilder(
+                    future: _provider.getCurrency(),
+                    builder: (ctx, dataSnapShot) {
+                      if (dataSnapShot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(color: Colors.purple),
+                                SizedBox(height: 16),
+                                Directionality(
+                                  textDirection: TextDirection.rtl,
+                                  child: Text(
+                                    "در حال دریافت اطلاعات ... ",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontFamily: 'IRANSans',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                        );
+                      } else {
+                        if (dataSnapShot.error != null) {
+                          final snackBar = SnackBar(
+                              content: Text(dataSnapShot.error.toString()));
+                          Future.delayed(Duration.zero).then((value) =>
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar));
+                          return Container();
+                        } else {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: _provider.currencyList.length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return index == 0
+                                      ? Container(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 8),
+                                          child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'آخرین بروزرسانی ${_provider.time[1]} ساعت ${_provider.time[2]}',
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 14,
+                                                    fontFamily: 'IRANSans',
+                                                  ),
+                                                )
+                                              ]),
+                                        )
+                                      : generateItem(
+                                          _provider.currencyList[index - 1]);
+                                }),
+                          );
+                        }
+                      }
+                    }),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
